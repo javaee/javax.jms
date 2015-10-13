@@ -51,7 +51,7 @@
     </parent>
     <groupId>javax.jms</groupId>
     <artifactId>javax.jms-api</artifactId>
-    <version>2.1-b02</version>
+    <version>2.1-b03-SNAPSHOT</version>
 
     <properties>
         <!--
@@ -102,9 +102,9 @@
     </developers>
 
     <scm>
-        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/tags/javax.jms-api-2.1-b02</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/tags/javax.jms-api-2.1-b02</developerConnection>
-        <url>http://java.net/projects/glassfish/sources/svn/show/tags/javax.jms-api-2.1-b02</url>
+        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/api/javaee-api/javax.jms</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/api/javaee-api/javax.jms</developerConnection>
+        <url>http://java.net/projects/glassfish/sources/svn/show/trunk/api/javaee-api/javax.jms</url>
     </scm>
 
     <build>
