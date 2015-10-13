@@ -55,7 +55,12 @@
 
     <properties>
         <!--
-            For every promotion build, increment spec.build
+            After every promotion build:
+              - increment spec.build
+
+            To re-spin a promotion build:
+              - change the project <version> back to the previous value
+              - commit the change
         
             When the spec turns final:
               - change spec.non.final to false

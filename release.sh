@@ -2,7 +2,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010-2015 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -38,9 +38,8 @@
 # only if the new code is made subject to such option by the copyright
 # holder.
 #
-
 #------------------------------------------------------   
-#-- BE SURE TO HAVE THE FOLLOWING IN YOUR SETTINGS.XML
+#--	BE SURE TO HAVE THE FOLLOWING IN YOUR SETTINGS.XML
 #------------------------------------------------------
 #
 #    <servers>
@@ -50,27 +49,51 @@
 #            <password>password</password>
 #        </server>
 #    </servers>
-#    <profiles>
-#      <profile>
-#        <id>release</id>
-#        <properties>
-#          <release.arguments>-Dhttps.proxyHost=www-proxy.us.oracle.com -Dhttps.proxyPort=80 -Dgpg.passphrase=glassfish -Pjvnet-release</release.arguments>
-#        </properties>
-#        <activation>
-#          <activeByDefault>false</activeByDefault>
-#        </activation>
-#      </profile>
-#    </profiles>
 
 # see the following URL for gpg issues
 # https://docs.sonatype.org/display/Repository/How+To+Generate+PGP+Signatures+With+Maven#HowToGeneratePGPSignaturesWithMaven-GenerateaKeyPair
 
-# login to nexus at maven.java.net and release (Close) the artifact
-# https://maven.java.net/index.html#stagingRepositories
+# on solaris, lets assume gsed is in the PATH
+if [ `uname | grep -i sunos | wc -l` -eq 1 ]
+then
+    SED="gsed"
+else
+    SED="sed"
+fi
 
-# More information:
-# https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-8.ReleaseIt
-# http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Migrating+Maven+deployment+to+maven.java.net
+# on OSX, -r is -E
+if [ `uname | grep -i darwin | wc -l` -eq 1 ]
+then
+	SED_OPTS="-Ee"
+else
+	SED_OPTS="-re"
+fi
 
-mvn release:prepare -Prelease
-mvn release:perform -Prelease
+CURRENT_VERSION=`grep "<version>" pom.xml | head -1 | $SED $SED_OPTS 's/.*<version>(.*)<\/version>/\1/'`
+echo $CURRENT_VERSION
+NEXT_RELEASE_VERSION=`echo $CURRENT_VERSION | sed s@"-SNAPSHOT"@@g`
+NEXT_RELEASE_TAG="javax.jms-api-$NEXT_RELEASE_VERSION"
+
+# remove local changes
+svn revert -R .
+
+# remove unversioned files
+svn status | grep ? | awk '{print $2}' | xargs rm -rf
+
+# remove tag if exist
+if [ `git tag | grep $NEXT_RELEASE_TAG | wc -l` -eq 1 ]
+ then
+   set +e
+   svn del https://svn.java.net/svn/glassfish~svn/tags/$NEXT_RELEASE_TAG -m "delete tag"
+   set -e
+fi
+
+ARGS=" $*"
+# everything supplied as argument will be provided to every maven command.
+# e.g to supply -Dmaven.skip.test or -Dmaven.repo.local=/path/to/repo
+
+mvn -B -e release:prepare -DpreparationGoals="'install' $ARGS" $ARGS -Prelease
+mvn -B -e release:perform -Dgoals="'deploy' $ARGS" $ARGS -Prelease
+
+mvn -B release:prepare -Prelease
+mvn -B release:perform -Prelease
