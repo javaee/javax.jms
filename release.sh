@@ -69,7 +69,7 @@ else
 	SED_OPTS="-re"
 fi
 
-CURRENT_VERSION=`grep "<version>" pom.xml | head -1 | $SED $SED_OPTS 's/.*<version>(.*)<\/version>/\1/'`
+CURRENT_VERSION=`grep "<version>" pom.xml | head -2 | tail -1 | $SED $SED_OPTS 's/.*<version>(.*)<\/version>/\1/'`
 echo $CURRENT_VERSION
 NEXT_RELEASE_VERSION=`echo $CURRENT_VERSION | sed s@"-SNAPSHOT"@@g`
 NEXT_RELEASE_TAG="javax.jms-api-$NEXT_RELEASE_VERSION"
