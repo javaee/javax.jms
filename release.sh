@@ -81,7 +81,7 @@ svn revert -R .
 svn status | grep ? | awk '{print $2}' | xargs rm -rf
 
 # remove tag if exist
-svn del https://svn.java.net/svn/glassfish~svn/tags/$NEXT_RELEASE_TAG -m "delete tag" || true
+svn del svn+ssh://$USER@svn.java.net/glassfish~svn/tags/$NEXT_RELEASE_TAG -m "delete tag" || true
 
 ARGS=" $*"
 # everything supplied as argument will be provided to every maven command.
