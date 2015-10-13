@@ -89,6 +89,3 @@ ARGS=" $*"
 
 mvn -B -e release:prepare -DpreparationGoals="'install' $ARGS" $ARGS -Prelease
 mvn -B -e release:perform -Dgoals="'deploy' $ARGS" $ARGS -Prelease
-
-mvn -B release:prepare -Prelease
-mvn -B release:perform -Prelease
